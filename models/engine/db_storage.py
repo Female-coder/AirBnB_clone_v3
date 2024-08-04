@@ -77,24 +77,22 @@ class DBStorage:
 
     def get(self, cls, id):
         """
-        Retrieves object of a class or all objects of that class
+        Returns the object based on the class name and its ID, or None if not
+        found
         """
-        if id and isinstance(id, str):
-            if cls and (cls in classes.keys() or cls in classes.values()):
-                all_objs = self.all(cls)
-                for key, value in all_objs.items():
-                    if id == value.id and key.split('.')[1] == id:
-                        return value
-        return
+        objects = self.__session.query(classes[cls])
+        for obj in objects:
+            if obj.id == id:
+                return obj
+        return None
 
     def count(self, cls=None):
         """
-        Returns the occurrence of a class or all classes
+        Returns the number of objects in storage matching the given class name.
+        If no name is passed, returns the count of all objects in storage.
         """
-        occurrence = 0
-        if cls:
-            if cls in classes.keys() or cls in classes.values():
-                occurrence = len(self.all(cls))
-        if not cls:
-            occurrence = len(self.all())
-        return occurrence
+        nobjects = 0
+        for clss in classes:
+            if cls is None or cls is classes[clss] or cls is clss:
+                nobjects += len(self.__session.query(classes[clss]).all())
+        return nobjects

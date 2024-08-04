@@ -10,6 +10,7 @@ import sqlalchemy
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
+import hashlib
 
 time = "%Y-%m-%dT%H:%M:%S.%f"
 
@@ -23,8 +24,8 @@ class BaseModel:
     """The BaseModel class from which future classes will be derived"""
     if models.storage_t == "db":
         id = Column(String(60), primary_key=True)
-        created_at = Column(DateTime, default=datetime.now)
-        updated_at = Column(DateTime, default=datetime.now)
+        created_at = Column(DateTime, default=datetime.utcnow)
+        updated_at = Column(DateTime, default=datetime.utcnow)
 
     def __init__(self, *args, **kwargs):
         """Initialization of the base model"""
@@ -54,11 +55,11 @@ class BaseModel:
 
     def save(self):
         """updates the attribute 'updated_at' with the current datetime"""
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.utcnow()
         models.storage.new(self)
         models.storage.save()
 
-    def to_dict(self):
+    def to_dict(self, dump=None):
         """returns a dictionary containing all keys/values of the instance"""
         new_dict = self.__dict__.copy()
         if "created_at" in new_dict:
@@ -68,6 +69,9 @@ class BaseModel:
         new_dict["__class__"] = self.__class__.__name__
         if "_sa_instance_state" in new_dict:
             del new_dict["_sa_instance_state"]
+        if getenv("HBNB_TYPE_STORAGE") == "db":
+            if 'password' in new_dict:
+                del new_dict["password"]
         return new_dict
 
     def delete(self):
