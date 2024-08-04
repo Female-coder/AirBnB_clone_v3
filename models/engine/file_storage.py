@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Contain the FileStorage class
+Contains the FileStorage class
 """
 
 import json
@@ -70,24 +70,27 @@ class FileStorage:
         self.reload()
 
     def get(self, cls, id):
-        """A method to retrieve one object:"""
-        if cls and id:
-            if cls in classes.values() and isinstance(cls, str):
-                cls_obj = self.all(cls)
-                for value in cls_obj.values():
-                    if value.id == id:
+        """
+        Retrieves object of a class or all objects of that class
+        """
+        if id and isinstance(id, str):
+            if cls and (cls in classes.keys() or cls in classes.values()):
+                all_objs = self.all(cls)
+                for key, value in all_objs.items():
+                    if id == value.id and key.split('.')[1] == id:
                         return value
-            else:
-                return
+        return
 
     def count(self, cls=None):
-        """method to count the number of objects in storage:"""
+        """
+        Returns the occurrence of a class or all classes
+        """
+        occurrence = 0
+        if cls:
+            if cls in classes.keys() or cls in classes.values():
+                occurrence = len(self.all(cls))
+            else:
+                return occurrence
         if not cls:
-            cls_instance = self.all()
-            return len(cls_instance)
-        for c, v in classes.items():
-            if cls == c or cls == v:
-                all_instances = self.all(cls)
-                return len(all_instances)
-        if cls not in classes.values():
-            return
+            occurrence = len(self.all())
+        return occurrence
