@@ -192,7 +192,7 @@ No known bugs at this time.
 ## Authors
 
 Neo Magadani - [Github](https://github.com/female-coder) /
-
+Samuel Stephen - [Github](http://github.com/stephensonsss)/
 Second part of Airbnb: Joann Vuong
 
 ## License
